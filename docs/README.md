@@ -10,6 +10,7 @@ Microsoft Azure Account: You will need a valid and active Azure account for the 
 ## Setting up the environment
 
 We should start by installing Azure SDK on a host running Ansible:
+
 **`$ pip install ansible[azure]`**
 
 
@@ -31,18 +32,7 @@ Azure service pricipal can be created using:
 
 #### via Azure portal
 
-Once logged in to [Azure portal](https://portal.azure.com/) click on **Azure Active Directory** (1)
-
-![Image of Azure portal](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/azureAD.png)
-
-From Azure Active Directory select **User settings** (1)
-
-![Image of Azure AD](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/azureADuserSettings.png)
-
-Check that the **App Registrations** setting is set to **Yes**.
-When set to Yes, anyone can register an application and we can proceed. If set to No, either we need to be the admin in order to register an application or we should get it enabled by the admin of the Azure account:
-
-![Image of Azure AD](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/azureADappReg.png)
+For creating the Service Principal through Azure portal, refer to [Microsofts Documentation](https://docs.microsoft.com/en-gb/azure/active-directory/develop/howto-create-service-principal-portal).
 
 #### via Azure Cloud Shell or CLI
 
