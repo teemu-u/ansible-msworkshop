@@ -58,34 +58,24 @@ We will also need your Azure SubsciptionID. That can be fetched by running the f
 
 Copy this information to your text editor as well.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+#### Pulling all together
 
-```markdown
-Syntax highlighted code block
+Once we have created all the credentials required by Ansible to use Azure APIs, we can create a credential file on the **Ansible control node**
 
-# Header 1
-## Header 2
-### Header 3
+First we'll have to create a directory for Azure credentials under the home directory:
 
-- Bulleted
-- List
+`$ mkdir ~/.azure`
 
-1. Numbered
-2. List
+Then we'll create a file for the credentials:
 
-**Bold** and _Italic_ and `Code` text
+`$ vim ~/.azure/credential`
 
-[Link](url) and ![Image](src)
+And paste in the information we gather previously:
+
 ```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/teemu-u/ansible-msworkshop/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
-
-# Service Principal Credentials
+[default] 
+subscription_id=xxxxxx-xxxxx-xxxxxx-xxxx 
+client_id=xxxxxx-xxxx-xxxx-xxxxx 
+secret=xxxxxxxxxx 
+tenant=xxxxx-xxxx-xxx-xxx-xxx
+```
