@@ -11,7 +11,7 @@ Using the Azure Resource Manager modules requires authenticating with the Azure 
 - [Active Directory Username/Password](#active-directory-username-password)
 - [Service Principal Credentials](#service-principal-credentials)
 
-#Service Principal Credentials
+
 #### Step 1: Create Azure service principal
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
@@ -43,3 +43,5 @@ Your Pages site will use the layout and styles from the Jekyll theme you have se
 ### Support or Contact
 
 Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+
+# Service Principal Credentials
