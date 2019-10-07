@@ -14,6 +14,42 @@ Using the Azure Resource Manager modules requires authenticating with the Azure 
 
 #### Step 1: Create Azure service principal
 
+First thing is to login to [Azure portal](https://portal.azure.com/).
+After you've logged in to Azure using your Microsoft account you should create something called Azure service principal, which we will need for Azure Resource Manager modules to authenticate with the Azure API.
+
+Azure service pricipal can be created using:
+- Azure portal
+- [Azure Cloud Shell](#via-azure-cloud-shell-or-cli)
+- [Azure CLI](#via-azure-cloud-shell-or-cli)
+
+#### via Azure portal
+
+
+
+#### via Azure Cloud Shell or CLI
+
+Once logged in to [Azure portal](https://portal.azure.com/) click on **Cloud Shell** (1) and select **Bash** (2)
+
+![Image of Azure portal](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/sp_cli.png)
+
+When the Cloud Shell has been initialized type the following command by replacing <YourServicePrincipalNameHere> -value with naming of your choice:
+  
+`az ad sp create-for-rbac --name AnsibleServicePrincipal`
+
+After running the command, it will output a JSON blob similar to this:
+
+![Create service principal](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/sp_cli_create.png)
+
+Output should be copied to your text editor, as we will need the details going forward.
+
+We will also need your Azure SubsciptionID. That can be fetched by running the following command on the Cloud Shell or CLI:
+
+`az account show`
+
+![Azure account info](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/sp_cli_account.png)
+
+Copy this information to your text editor as well.
+
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
 ```markdown
