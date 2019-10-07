@@ -1,18 +1,25 @@
 # Getting started with Ansible on Microsoft Azure
 
+Ansible interacts with the Azure resource manager’s REST APIs to manage infrastructure components using Python SDK provided by Microsoft, which requires credentials of an authorized user or service to work with Azure REST APIs. Ansible modules that interact with Azure resourcer manager are packaged as part of Ansible cloud modules.
+
+
 ### Prerequisites
 
 Microsoft Azure Account: You will need a valid and active Azure account for the Azure labs. If you do not have one, you can sign up for a [free trial](https://azure.microsoft.com/en-gb/free/).
 
 ## Setting up the environment
 
+We should start by installing Azure SDK on a host running Ansible:
+**`$ pip install ansible[azure]`**
+
+
 Using the Azure Resource Manager modules requires authenticating with the Azure API. You can choose from two authentication strategies:
 
 - [Active Directory Username/Password](#active-directory-username-password)
-- [Service Principal Credentials](#service-principal-credentials)
+- [Service Principal Credentials](#create-azure-service-principal)
 
 
-#### Step 1: Create Azure service principal
+#### Create Azure service principal
 
 First thing is to login to [Azure portal](https://portal.azure.com/).
 After you've logged in to Azure using your Microsoft account you should create something called Azure service principal, which we will need for Azure Resource Manager modules to authenticate with the Azure API.
@@ -24,7 +31,18 @@ Azure service pricipal can be created using:
 
 #### via Azure portal
 
+Once logged in to [Azure portal](https://portal.azure.com/) click on **Azure Active Directory** (1)
 
+![Image of Azure portal](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/azureAD.png)
+
+From Azure Active Directory select **User settings** (1)
+
+![Image of Azure AD](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/azureADuserSettings.png)
+
+Check that the **App Registrations** setting is set to **Yes**.
+When set to Yes, anyone can register an application and we can proceed. If set to No, either we need to be the admin in order to register an application or we should get it enabled by the admin of the Azure account:
+
+![Image of Azure AD](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/azureADappReg.png)
 
 #### via Azure Cloud Shell or CLI
 
@@ -34,7 +52,7 @@ Once logged in to [Azure portal](https://portal.azure.com/) click on **Cloud She
 
 When the Cloud Shell has been initialized type the following command by replacing <YourServicePrincipalNameHere> -value with naming of your choice:
   
-`az ad sp create-for-rbac --name AnsibleServicePrincipal`
+**`$ az ad sp create-for-rbac --name AnsibleServicePrincipal`**
 
 After running the command, it will output a JSON blob similar to this:
 
@@ -44,7 +62,7 @@ Output should be copied to your text editor, as we will need the details going f
 
 We will also need your Azure SubsciptionID. That can be fetched by running the following command on the Cloud Shell or CLI:
 
-`az account show`
+**`$ az account show`**
 
 ![Azure account info](https://github.com/teemu-u/ansible-msworkshop/blob/master/images/sp_cli_account.png)
 
