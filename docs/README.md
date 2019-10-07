@@ -1,10 +1,18 @@
-## Welcome to GitHub Pages
+# Getting started with Ansible on Microsoft Azure
 
-You can use the [editor on GitHub](https://github.com/teemu-u/ansible-msworkshop/edit/master/docs/README.md) to maintain and preview the content for your website in Markdown files.
+### Prerequisites
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Microsoft Azure Account: You will need a valid and active Azure account for the Azure labs. If you do not have one, you can sign up for a [free trial](https://azure.microsoft.com/en-gb/free/).
 
-### Markdown
+## Setting up the environment
+
+Using the Azure Resource Manager modules requires authenticating with the Azure API. You can choose from two authentication strategies:
+
+- [Active Directory Username/Password](#active-directory-username-password)
+- [Service Principal Credentials](#service-principal-credentials)
+
+#Service Principal Credentials
+#### Step 1: Create Azure service principal
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
