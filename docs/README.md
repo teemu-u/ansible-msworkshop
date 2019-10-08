@@ -102,7 +102,7 @@ These are logical containers where Azure resources are deployed. We can deploy r
 
 * **Location:** This is a region where we can deploy our resources in Azure Cloud. All of these will be deploying resources in the westus region. We will define this location as azure_region in vars -section of the playbook:
 
-`azure_region: westeu`
+`azure_region: westeurope`
 
 To do this, follow the steps below:
 
