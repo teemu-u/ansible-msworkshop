@@ -80,9 +80,9 @@ secret=xxxxxxxxxx
 tenant=xxxxx-xxxx-xxx-xxx-xxx
 ```
 
-## Creating an Azure virtual machine
+## Lab: Creating Azure environment
 
-Before we jump into creating a Linux VM, we should know the following terms with respect to Azure:
+Before we jump into creating a Linux VM, we should know the following things with respect to Azure:
 
 * **Resource groups:** 
 These are logical containers where Azure resources are deployed. We can deploy resources into a specific resource group for a specific use case. For example, we can have resource groups named production for all the production resources and staging for all the resources required for staging.
@@ -101,6 +101,21 @@ These are logical containers where Azure resources are deployed. We can deploy r
   * **Queue storage:** This is a messaging storage system. A single queue can store millions of messages, and each message can be up to 64 KB in size.
 
 * **Location:** This is a region where we can deploy our resources in Azure Cloud. All of these will be deploying resources in the westus region. We will define this location as azure_region in vars -section of the playbook:
+
+An Azure virtual machine can be attached to multiple network interface cards. With a network interface card, the virtual machine can access the internet and communicate with other resources both inside and outside Azure Cloud. In the, Creating an Azure virtual machine, while creating a virtual machine, it creates a default NIC card for the VM with default configurations. In this, we will see how to create, delete, and manage a NIC with custom settings.
+
+When it comes to networking in Azure, we should be aware of the following term:
+
+* **Virtual network:** This is a logical separation of the network within the Azure Cloud. A virtual network can be assigned a CIDR block. Any virtual network has the following attributes associated with it:
+  * **Name**
+  * **Address Space**
+  * **Subnet**
+  
+Azure allocates the **public IP** address using one of two methods, static or dynamic. An IP address allocated with the static method will not change, irrespective of the power cycle of the virtual machine; whereas, an IP address allocated with the dynamic method is subject to change. 
+
+In Azure, a **network security group** is an access control list (ACL), which allows and denies network traffic to subnets or an individual NIC. In this recipe, we will create a network security group with some basic rules for allowing web and SSH traffic and denying the rest of the traffic.
+
+Since a network security group is the property of the network and not the virtual machine, we can use subnets to group our virtual machines and keep them in the same network security group for the same ACL.
 
 `azure_region: westeurope`
 
@@ -152,14 +167,7 @@ To do this, follow the steps below:
 
 ## Managing network interfaces
 
-An Azure virtual machine can be attached to multiple network interface cards. With a network interface card, the virtual machine can access the internet and communicate with other resources both inside and outside Azure Cloud. In the, Creating an Azure virtual machine, while creating a virtual machine, it creates a default NIC card for the VM with default configurations. In this, we will see how to create, delete, and manage a NIC with custom settings.
 
-Before we move ahead and create a NIC, we should be aware of the following term:
-
-* **Virtual network:** This is a logical separation of the network within the Azure Cloud. A virtual network can be assigned a CIDR block. Any virtual network has the following attributes associated with it:
-  * **Name**
-  * **Address Space**
-  * **Subnet**
 
 
 To do this, follow the steps below:
@@ -226,9 +234,7 @@ To do this, follow the steps below:
 
 In this, we will create a public IP address and associate it with the network interface.
 
-Azure allocates the public IP address using one of two methods, static or dynamic. An IP address allocated with the static method will not change, irrespective of the power cycle of the virtual machine; whereas, an IP address allocated with the dynamic method is subject to change. In this, we will create a public IP address allocated with the Static method.
 
-To do this, follow the steps below:
 
 1. Create a public IP:
 
@@ -253,7 +259,6 @@ To do this, follow the steps below:
 
 ## Using public IP addresses with network interfaces and virtual machines
 
-In this, we will create a virtual machine and network interface using the public IP we created. After creating a virtual machine with the public network interface, we will log into it using SSH.
 
 1. Create a NIC with the existing public IP address:
 
@@ -300,9 +305,6 @@ In step 3, we logged into the virtual machine created with the public NIC.
 
 ## Managing an Azure network security group
 
-In Azure, a network security group is an access control list (ACL), which allows and denies network traffic to subnets or an individual NIC. In this recipe, we will create a network security group with some basic rules for allowing web and SSH traffic and denying the rest of the traffic.
-
-Since a network security group is the property of the network and not the virtual machine, we can use subnets to group our virtual machines and keep them in the same network security group for the same ACL.
 
 1. To Create a network security group:
 
