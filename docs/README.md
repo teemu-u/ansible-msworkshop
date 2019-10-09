@@ -14,7 +14,7 @@ Microsoft Azure Account: You will need a valid and active Azure account for the 
 
 We should start by installing Azure SDK on a host running Ansible:
 
-**`$ pip install 'ansible[azure]'`**
+**`$ sudo pip install 'ansible[azure]'`**
 
 
 Using the Azure Resource Manager modules requires authenticating with the Azure API. You can choose from two authentication strategies:
