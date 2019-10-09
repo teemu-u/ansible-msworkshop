@@ -80,9 +80,13 @@ secret=xxxxxxxxxx
 tenant=xxxxx-xxxx-xxx-xxx-xxx
 ```
 
-## Lab: Creating Azure environment
+If you are already familiar with Azure, you can go directly to labs:
+- [Azure Exercise](#Lab:-Creating-Azure-environment)
 
-Before we jump into creating a Linux VM, we should know the following things with respect to Azure:
+
+## Introduction: Creating Azure environment
+
+Before we jump into to the lab exercise, we should know the following things with respect to Azure:
 
 * **Resource groups:** 
 These are logical containers where Azure resources are deployed. We can deploy resources into a specific resource group for a specific use case. For example, we can have resource groups named production for all the production resources and staging for all the resources required for staging.
@@ -100,9 +104,9 @@ These are logical containers where Azure resources are deployed. We can deploy r
   * **File storage:** This is the network file share, which can be accessed through standard Server Message Block (SMB) protocol.
   * **Queue storage:** This is a messaging storage system. A single queue can store millions of messages, and each message can be up to 64 KB in size.
 
-* **Location:** This is a region where we can deploy our resources in Azure Cloud. All of these will be deploying resources in the westus region. We will define this location as azure_region in vars -section of the playbook:
+* **Location:** This is a region where we can deploy our resources in Azure Cloud. All of these will be deploying resources in the westeurope -region.
 
-An Azure virtual machine can be attached to multiple network interface cards. With a network interface card, the virtual machine can access the internet and communicate with other resources both inside and outside Azure Cloud. In the, Creating an Azure virtual machine, while creating a virtual machine, it creates a default NIC card for the VM with default configurations. In this, we will see how to create, delete, and manage a NIC with custom settings.
+An Azure virtual machine can be attached to multiple network interface cards. With a network interface card, the virtual machine can access the internet and communicate with other resources both inside and outside Azure Cloud. In the, Creating an Azure virtual machine, while creating a virtual machine, by default it creates a NIC card for the VM with default configurations.
 
 When it comes to networking in Azure, we should be aware of the following term:
 
@@ -113,67 +117,96 @@ When it comes to networking in Azure, we should be aware of the following term:
   
 Azure allocates the **public IP** address using one of two methods, static or dynamic. An IP address allocated with the static method will not change, irrespective of the power cycle of the virtual machine; whereas, an IP address allocated with the dynamic method is subject to change. 
 
-In Azure, a **network security group** is an access control list (ACL), which allows and denies network traffic to subnets or an individual NIC. In this recipe, we will create a network security group with some basic rules for allowing web and SSH traffic and denying the rest of the traffic.
+In Azure, a **network security group** is an access control list (ACL), which allows and denies network traffic to subnets or an individual NIC. During this exercise, we will create a network security group with some basic rules for allowing web and SSH traffic and denying the rest of the traffic.
 
 Since a network security group is the property of the network and not the virtual machine, we can use subnets to group our virtual machines and keep them in the same network security group for the same ACL.
 
-`azure_region: westeurope`
 
-To do this, follow the steps below:
+## Lab: Creating Azure environment
+
+During this lab we will create your own datacenter to Azure.
+
+As first step as you've already noted that we start pretty much all the playbooks by defining the name of the playbook, hosts that we want to execute the playbook on/against and the variables that we want to define for our tasks to use:
+
+```
+---
+- name: Sample playbook
+  hosts: localhost
+  vars:
+    azure_region: westeurope
+  tasks:
+```
+
+By defining variable `azure_region: westeurope` we can reference that in our tasks to tell our modules where in the world we want our Azure resource to be deployed.
+
+After we have the basis of the playbook done, we can start adding tasks to it:
 
 1. Create a resource group for deploying resources:
 
 ```
 - name: Create resource group
   azure_rm_resourcegroup:
-     name: example
-     location: "{{azure_region}}"
+    name: example
+    location: "{{azure_region}}"
 ```
+
+**In step 1:** we created a resource group for deploying resources in our defined location. We will be using this resource group name in subsequent tasks to deploy all of the resources in this resource group.
+
+As we are not using managed disks for our Virtual Machine(s) in this exercise, we will have to create Storage Account to keep our VM disk(s):
 
 2. Create a storage account for our VM disk:
 
 ```
 - name: Create a storage account
   azure_rm_storageaccount:
-     resource_group: example
-     name: examplestorage01
-     type: Standard_LRS
-     location: "{{azure_region}}"
-```
-
-3. Let’s create our first VM in Azure Cloud:
-
-```
-- name: Create VM with default settings
-  azure_rm_virtualmachine:
     resource_group: example
-    name: testvm10
-    vm_size: Standard_D4
-    storage_account: examplestorage01
-    admin_username: ansible
-    admin_password: Ansible123!
-    image:
-      offer: CentOS
-      publisher: OpenLogic
-      sku: '7.1'
-      version: latest
+    name: examplestorage01
+    type: Standard_LRS
+    location: "{{azure_region}}"
 ```
-
-**In step 1:** we created a resource group for deploying resources in our defined location. We will be using this resource group name in subsequent tasks to deploy all of the resources in this resource group.
 
 **In step 2:** we created a storage account, which will be required for the OS disk of our virtual machine. Azure offers multiple storage types depending upon the use case and availability-Locally Redundant Storage (LRS), Geo-Redundant Storage (GRS), Zone-Redundant Storage (ZRS), or Read Access Geo-Redundant Storage (RAGRS). We are using Standard_RAGRS.
 
-**In step 3:** we created our first virtual machine in Azure Cloud. This task will take care of setting up an admin user and setting a password for it. We have set the admin_username as ansible. Once our virtual machine is ready, we can connect to our virtual machine using the SSH protocol and the password associated with it, that we used in the task.
+When we are deploying things in Azure, we want to have the capability to limit access to the resources.
+We can accomplish this by creating Network Security Group:
 
-## Managing network interfaces
+3. Create a network security group:
 
+```
+- name: Create network security group
+  azure_rm_securitygroup:
+    resource_group: example
+    name: mysg01
+    purge_rules: yes
+    rules:
+      - name: 'AllowSSH'
+        protocol: Tcp
+        destination_port_range: 22
+        access: Allow
+        priority: 100
+        direction: Inbound
+      - name: 'AllowHTTP'
+        protocol: Tcp
+        destination_port_range: 80
+        priority: 101
+        access: Allow
+        direction: Inbound
+      - name: 'AllowHTTPS'
+        protocol: Tcp
+        destination_port_range: 443
+        access: Allow
+        priority: 102
+        direction: Inbound
+      - name: 'DenyAll'
+        protocol: Tcp
+        access: Deny
+        priority: 103
+        direction: Inbound
+```
 
+To be able to provision Virtual Machines in Azure, we will need Virtual Network and Subnet for that machine to be able to talk to other machines, internet and you:
 
-
-To do this, follow the steps below:
-
-
-1. Create a virtual network:
+4. Create a virtual network:
 
 ```
 - name: Create Virtual Network
@@ -181,24 +214,28 @@ To do this, follow the steps below:
     name: vnet01
     resource_group: example
     address_prefixes_cidr:
-       - "10.2.0.0/16"
-       - "172.1.0.0/16"
-  state: present 
+      - "10.2.0.0/16"
+      - "172.1.0.0/16"
+    state: present
 ```
 
-2. Create a subnet:
+**In step 4:** we created a virtual network with the name vnet01 within the same resource group we used in the first, Creating an Azure virtual machine. Since we are using a resource group, the resources can pick the default location of the resource group. We have defined the CIDR network addresses as 10.2.0.0/24 and 172.1.0.0/16. We can also define multiple network addresses using YAML syntax.
+
+5. Create a subnet and attach a security group to it
 
 ```
 - name: Create subnet
   azure_rm_subnet:
     name: subnet01
-    virtual_network_name: my_first_subnet
+    virtual_network_name: vnet01
     resource_group: example
-    address_prefix_cidr: "10.2.0.0/24" 
-    state: present 
+    address_prefix_cidr: "10.2.0.0/24"
+    security_group_name: mysg01 
 ```
 
-3. Create a Network Interface Card:
+**In step 5:** we created a subnet using the azure_rm_subnet module inside the virtual network vnet01.
+
+6. Create Network Interface Card for our Virtual machine and attach security group on it
 
 ```
 - name: Create network interface card
@@ -207,165 +244,39 @@ To do this, follow the steps below:
     resource_group: example
     virtual_network_name: vnet01
     subnet_name: subnet01
-    public_ip: no 
-    state: present 
-  register: network_interface 
+    public_ip: yes
+    security_group_name: mysg01 
+    state: present
+  register: network_interface
 ```
 
-4. Access the private IP address:
+**In step 6:** we created a network interface card using azure_rm_networkinterface and named it nic01. We specified the public_ip as yes, which will ensure that Azure will allocate a public IP address to the NIC.
 
-```
-- name: Show private ip
-  debug:
-    msg: "{{network_interface.ip_configuration.private_ip_address}}"
-```
-
-
-**In step 1:** we created a virtual network with the name vnet01 within the same resource group we used in the first, Creating an Azure virtual machine. Since we are using a resource group, the resources can pick the default location of the resource group. We have defined the CIDR network addresses as 10.2.0.0/24 and 172.1.0.0/16. We can also define multiple network addresses using YAML syntax.
-
-**In step 2:** we created a subnet using the azure_rm_subnet module inside the virtual network vnet01.
-
-**In step 3:** we created a network interface card using azure_rm_networkinterface and named it nic01. We specified the public_ip as no, which will ensure that Azure will not allocate any public IP address to the NIC, but also that NIC will be associated with a private IP from the subnet address space.
-
-**In step 4:** we use the debug module to print the private IP address allocated to the network interface using the variable registered in step 3.
-
-
-## Working with public IP addresses
-
-In this, we will create a public IP address and associate it with the network interface.
-
-
-
-1. Create a public IP:
-
-```
-- name: Create Public IP address
-  azure_rm_publicipaddress:
-    resource_group: example
-    name: pip01
-    allocation_method: Static
-    domain_name: test 
-    state: present 
-  register: publicip 
-```
-
-2. Display a public IP:
-
-```
-- name: Show Public IP address
-  debug:  
-     msg: "{{ publicip.ip_address }}" 
-```
-
-## Using public IP addresses with network interfaces and virtual machines
-
-
-1. Create a NIC with the existing public IP address:
-
-```
-- name: Create network interface card using existing public ip address
-  azure_rm_networkinterface:
-    name: nic02
-    resource_group: example
-    virtual_network_name: vnet01
-    subnet_name: subnet01
-    public_ip_address_name: pip01 
-    state: present 
-  register: network_interface02 
-```
-
-2. Create a virtual machine with the existing network interface:
+7. Create our CentOS virtual machine:
 
 ```
 - name: Create VM using existing virtual network interface card
   azure_rm_virtualmachine:
     resource_group: example
-    name: first_vm 
+    name: MyFirstVm
     location: "{{azure_region}}"
-    vm_size: Standard_D4
+    vm_size: Standard_DS1_v2
     storage_account: examplestorage01
     admin_username: ansible
     admin_password: Ansible123!
-    network_interfaces: nic02 
+    network_interfaces: nic01
     image:
       offer: CentOS
       publisher: OpenLogic
       sku: '7.1'
-      version: latest 
+      version: latest
 ```
 
-2. Log into the VM using the public IP from the recipe, Working with public IP addresses:
+**In step 7:** we created our first virtual machine in Azure Cloud. This task will take care of setting up an admin user and setting a password for it. We have set the admin_username as ansible. Once our virtual machine is ready, we can connect to our virtual machine using the SSH protocol and the password associated with it, that we defined in the VM creation task.
+
+8. Log into the VM using the public IP that you can get from Azure portal once the VM is created. 
+To connect with public IP addresses:
 
 `$ ssh ansible@13.33.23.24`
 
-In the first two steps, we created a NIC with an existing public IP, created in the recipe Working with public IP addresses, and a virtual machine using that NIC.
 
-In step 3, we logged into the virtual machine created with the public NIC.
-
-
-## Managing an Azure network security group
-
-
-1. To Create a network security group:
-
-```
-- name: Create network security group 
-  azure_rm_securitygroup:
-    resource_group: example
-    name: mysg01
-    purge_rules: yes
-    rules: 
-        - name: 'AllowSSH'
-          protocol: TCP
-          source_address_prefix: *
-          destination_port_range: 22
-          access: Allow
-          priority: 100
-          direction: Inbound 
-        - name: 'AllowHTTP' 
-          protocol: TCP 
-          source_address_prefix: * 
-          destination_port_range: 80 
-          priority: 101 
-          direction: Inbound 
-        - name: 'AllowHTTPS' 
-          protocol: TCP 
-          source_address_prefix: * 
-          destination_port_range: 443 
-          priority: 102 
-          direction: Inbound 
-        - name: 'DenyAll' 
-          protocol: TCP 
-          source_address_prefix: * 
-          destination_port_range: * 
-          priority: 103 
-          direction: Inbound 
-```
-
-2. Attach the subnet to the security group:
-
-```
-- name: Create subnet
-  azure_rm_subnet:
-    name: subnet01
-    virtual_network_name: my_first_subnet
-    resource_group: example
-    address_prefix_cidr: "10.2.0.0/24" 
-    state: present 
-    security_group_name: mysg01 
-```
-
-3. Attach the NIC card to the security group:
-
-```
-- name: Create network interface card using existing public ip address and security group
-  azure_rm_networkinterface:
-    name: nic02
-    resource_group: example
-    virtual_network_name: vnet01
-    subnet_name: subnet01
-    public_ip_address_name: pip01 
-    security_group_name: mysg01 
-    state: present 
-  register: network_interface02 
-```
