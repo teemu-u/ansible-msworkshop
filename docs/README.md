@@ -81,7 +81,7 @@ tenant=xxxxx-xxxx-xxx-xxx-xxx
 ```
 
 If you are already familiar with Azure, you can go directly to labs:
-- [Azure Exercise](#Lab:-Creating-Azure-environment)
+- [Azure Exercise](#lab:-creating-azure-environment)
 
 
 ## Introduction: Creating Azure environment
