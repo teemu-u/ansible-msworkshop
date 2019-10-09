@@ -3,7 +3,7 @@
 Ansible interacts with the Azure resource manager’s REST APIs to manage infrastructure components using Python SDK provided by Microsoft, which requires credentials of an authorized user or service to work with Azure REST APIs. Ansible modules that interact with Azure resourcer manager are packaged as part of Ansible cloud modules.
 
 #### If you are not seeing the images on the page, you can also browse to:
-#### https://github.com/teemu-u/ansible-msworkshop/tree/master/docs
+#### [https://github.com/teemu-u/ansible-msworkshop/tree/master/docs](https://github.com/teemu-u/ansible-msworkshop/tree/master/docs)
 
 
 ### Prerequisites
