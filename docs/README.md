@@ -71,7 +71,7 @@ First we'll have to create a directory for Azure credentials under the home dire
 
 Then we'll create a file for the credentials:
 
-`$ vim ~/.azure/credential`
+`$ vim ~/.azure/credentials`
 
 And paste in the information we gathered previously:
 
