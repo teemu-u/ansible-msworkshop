@@ -81,7 +81,7 @@ tenant=xxxxx-xxxx-xxx-xxx-xxx
 ```
 
 If you are already familiar with Azure, you can go directly to labs:
-- [Azure Exercise](#lab:-creating-azure-environment)
+- [Azure Exercise](#creating-azure-environment-lab)
 
 
 ## Introduction: Creating Azure environment
@@ -122,7 +122,7 @@ In Azure, a **network security group** is an access control list (ACL), which al
 Since a network security group is the property of the network and not the virtual machine, we can use subnets to group our virtual machines and keep them in the same network security group for the same ACL.
 
 
-## Lab: Creating Azure environment
+## Creating Azure environment lab
 
 During this lab we will create your own datacenter to Azure.
 
